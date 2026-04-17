@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"embed"
 	"fmt"
 	"os"
 	"os/exec"
@@ -15,6 +16,9 @@ type TemplateData struct {
 	UseAuth     bool
 	DBType      string
 }
+
+//go:embed
+var templatesFS embed.FS
 
 var framework string
 var useDocker bool
@@ -54,6 +58,8 @@ var newCmd = &cobra.Command{
 			mainTemplate = "templates/fiber/main.go.tmpl"
 		case "gin":
 			mainTemplate = "templates/gin/main.go.tmpl"
+		default:
+			mainTemplate = "templates"
 		}
 
 		generateFile(
@@ -113,7 +119,7 @@ var newCmd = &cobra.Command{
 }
 
 func generateFile(templatePath, outputPath string, data TemplateData) {
-	tmpl, err := template.ParseFiles(templatePath)
+	tmpl, err := template.ParseFS(templatesFS, templatePath)
 	if err != nil {
 		fmt.Println("Template error:", err)
 		return
