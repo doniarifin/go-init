@@ -1,36 +1,15 @@
 package main
 
 import (
-	"log"
-	"os"
-
-	"github.com/gofiber/fiber/v2"
-	"github.com/joho/godotenv"
-	"myapp/internal/handler"
+	"fmt"
+	"net/http"
 )
 
 func main() {
-	// load env
-	err := godotenv.Load()
-	if err != nil {
-		log.Println("No .env file found")
-	}
-
-	app := fiber.New()
-
-	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("Hello from myapp")
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello from myapp")
 	})
 
-	
-	app.Post("/register", handler.Register)
-	app.Post("/login", handler.Login)
-	
-
-	port := os.Getenv("APP_PORT")
-	if port == "" {
-		port = "3000"
-	}
-
-	log.Fatal(app.Listen(":" + port))
+	fmt.Println("Server running on :3000")
+	http.ListenAndServe(":3000", nil)
 }

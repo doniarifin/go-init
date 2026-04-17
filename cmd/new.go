@@ -59,7 +59,7 @@ var newCmd = &cobra.Command{
 		case "gin":
 			mainTemplate = "templates/gin/main.go.tmpl"
 		default:
-			mainTemplate = "templates"
+			mainTemplate = "templates/main.go.tmpl"
 		}
 
 		generateFile(
