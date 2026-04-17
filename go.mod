@@ -1,4 +1,4 @@
-module go-init
+module github.com/doniarifin/go-init
 
 go 1.23.3
 
