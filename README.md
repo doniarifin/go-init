@@ -7,7 +7,7 @@ A CLI tool to quickly generate Go backend boilerplate projects.
 ## Installation
 
 ```bash
-go install github.com/USERNAME/go-init@latest
+go install github.com/doniarifin/go-init@latest
 ```
 
 Make sure `$GOPATH/bin` is in your PATH.
