@@ -1,0 +1,9 @@
+# myapp
+
+Generated with go-init 
+
+## Run
+
+```
+go run main.go
+```

@@ -17,7 +17,7 @@ type TemplateData struct {
 	DBType      string
 }
 
-//go:embed
+//go:embed templates/*
 var templatesFS embed.FS
 
 var framework string
