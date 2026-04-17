@@ -59,7 +59,19 @@ var newCmd = &cobra.Command{
 		case "gin":
 			mainTemplate = "templates/gin/main.go.tmpl"
 		default:
-			mainTemplate = "templates/main.go.tmpl"
+			mainTemplate = "templates/http/main.go.tmpl"
+		}
+
+		//auth
+		if useAuth {
+			switch framework {
+			case "fiber":
+				mainTemplate = "templates/fiber/main.auth.go.tmpl"
+			case "gin":
+				mainTemplate = "templates/gin/main.auth.go.tmpl"
+			default:
+				mainTemplate = "templates/http/main.auth.go.tmpl"
+			}
 		}
 
 		generateFile(
@@ -102,13 +114,9 @@ var newCmd = &cobra.Command{
 			)
 		}
 
-		//auth fiber
-		if useAuth && framework == "fiber" {
-			generateFile(
-				"templates/auth/fiber/handler.go.tmpl",
-				filepath.Join(projectName, "internal/handler/auth.go"),
-				data,
-			)
+		//route
+		if useAuth {
+			generateRoute(framework, projectName, data)
 		}
 
 		// go mod tidy
@@ -138,6 +146,44 @@ func generateFile(templatePath, outputPath string, data TemplateData) {
 	}
 }
 
+func generateRoute(fw, projectName string, data TemplateData) {
+	switch fw {
+	case "fiber":
+		generateFile(
+			"templates/auth/fiber/handler.go.tmpl",
+			filepath.Join(projectName, "internal/handler/auth.go"),
+			data,
+		)
+		generateFile(
+			"templates/route/fiber/route.go.tmpl",
+			filepath.Join(projectName, "internal/route/route.go"),
+			data,
+		)
+	case "gin":
+		generateFile(
+			"templates/auth/gin/handler.go.tmpl",
+			filepath.Join(projectName, "internal/handler/auth.go"),
+			data,
+		)
+		generateFile(
+			"templates/route/gin/route.go.tmpl",
+			filepath.Join(projectName, "internal/route/route.go"),
+			data,
+		)
+	default:
+		generateFile(
+			"templates/auth/http/handler.go.tmpl",
+			filepath.Join(projectName, "internal/handler/auth.go"),
+			data,
+		)
+		generateFile(
+			"templates/route/http/route.go.tmpl",
+			filepath.Join(projectName, "internal/route/route.go"),
+			data,
+		)
+	}
+}
+
 func initGoMod(projectName string) {
 	cmd := exec.Command("go", "mod", "init", projectName)
 	cmd.Dir = projectName
@@ -158,6 +204,7 @@ func createStructure(projectName string) {
 		"internal/handler",
 		"internal/service",
 		"internal/repository",
+		"internal/route",
 		"config",
 		"pkg",
 	}

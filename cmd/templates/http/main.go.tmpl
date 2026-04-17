@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"net/http"
 )
 
@@ -10,6 +11,6 @@ func main() {
 		fmt.Fprintln(w, "Hello from {{.ProjectName}}")
 	})
 
-	fmt.Println("Server running on :3000")
-	http.ListenAndServe(":3000", nil)
+	log.Println("Server running on :3000")
+	log.Fatal(http.ListenAndServe(":3000", nil))
 }

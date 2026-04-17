@@ -1,0 +1,22 @@
+package route
+
+import (
+	"github.com/gin-gonic/gin"
+	"{{.ProjectName}}/internal/handler"
+)
+
+func SetupRouter() *gin.Engine {
+	r := gin.Default()
+
+	// group API
+	api := r.Group("/api/v1")
+	{
+		auth := api.Group("/auth")
+		{
+			auth.POST("/register", handler.Register)
+			auth.POST("/login", handler.Login)
+		}
+	}
+
+	return r
+}

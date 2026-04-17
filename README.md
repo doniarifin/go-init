@@ -33,8 +33,8 @@ go-init new myapp --framework=fiber
 Available frameworks:
 
 - fiber
-- ~~gin~~
-- ~~net-http (default)~~
+- gin
+- net-http (default)
 
 ---
 

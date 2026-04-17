@@ -1,0 +1,12 @@
+package route
+
+import (
+	"net/http"
+
+  "{{.ProjectName}}/internal/handler"
+)
+
+func RegisterRoutes() {
+	http.HandleFunc("/register", handler.Register)
+	http.HandleFunc("/login", handler.Login)
+}

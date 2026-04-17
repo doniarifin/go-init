@@ -1,0 +1,34 @@
+package main
+
+import (
+	"log"
+	"net/http"
+	"os"
+
+	"{{.ProjectName}}/internal/route"
+
+	"github.com/gin-gonic/gin"
+	"github.com/joho/godotenv"
+)
+
+func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found")
+	}
+
+	r := route.SetupRouter()
+
+	r.GET("/", func(c *gin.Context) {
+		c.String(http.StatusOK, "Hello from {{.ProjectName}}")
+	})
+
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8081"
+	}
+
+	log.Printf("Server running on :%s", port)
+	r.Run(":"+port)
+}
+

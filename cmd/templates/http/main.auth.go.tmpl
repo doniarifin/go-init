@@ -1,0 +1,34 @@
+package main
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+	"os"
+
+	"{{.ProjectName}}/internal/route"
+
+	"github.com/joho/godotenv"
+)
+
+func main() {
+
+	err := godotenv.Load()
+	if err != nil {
+		log.Println("No .env file found")
+	}
+
+	route.RegisterRoutes()
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, "Hello from myauth")
+	})
+
+	port := os.Getenv("APP_PORT")
+	if port == "" {
+		port = "8081"
+	}
+
+	log.Printf("Server running on :%s", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+}

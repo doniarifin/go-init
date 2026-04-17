@@ -1,0 +1,14 @@
+package route
+
+import (
+	"github.com/gofiber/fiber/v2"
+	"{{.ProjectName}}/internal/handler"
+)
+
+func SetupRoutes(app *fiber.App) {
+	api := app.Group("/api/v1")
+
+	auth := api.Group("/auth")
+	auth.Post("/register", handler.Register)
+	auth.Post("/login", handler.Login)
+}
