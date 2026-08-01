@@ -1,0 +1,16 @@
+.PHONY: run build test tidy fmt
+
+run:
+	go run main.go
+
+build:
+	go build -o bin/app main.go
+
+test:
+	go test ./...
+
+tidy:
+	go mod tidy
+
+fmt:
+	gofmt -w .

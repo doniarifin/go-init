@@ -1,0 +1,45 @@
+package service
+
+import (
+	"{{.ProjectName}}/{{.Pkg.Model}}"
+	"{{.ProjectName}}/{{.Pkg.Repository}}"
+)
+
+type {{.Entity.Title}}Service struct {
+	repo *repository.{{.Entity.Title}}Repository
+}
+
+func New{{.Entity.Title}}Service() *{{.Entity.Title}}Service {
+	return &{{.Entity.Title}}Service{repo: repository.New{{.Entity.Title}}Repository()}
+}
+
+func (s *{{.Entity.Title}}Service) GetAll() []model.{{.Entity.Title}} {
+	return s.repo.GetAll()
+}
+
+func (s *{{.Entity.Title}}Service) GetByID(id int) (model.{{.Entity.Title}}, error) {
+	item, ok := s.repo.GetByID(id)
+	if !ok {
+		return item, ErrNotFound
+	}
+	return item, nil
+}
+
+func (s *{{.Entity.Title}}Service) Create(item model.{{.Entity.Title}}) model.{{.Entity.Title}} {
+	return s.repo.Create(item)
+}
+
+func (s *{{.Entity.Title}}Service) Update(id int, item model.{{.Entity.Title}}) (model.{{.Entity.Title}}, error) {
+	updated, ok := s.repo.Update(id, item)
+	if !ok {
+		return updated, ErrNotFound
+	}
+	return updated, nil
+}
+
+func (s *{{.Entity.Title}}Service) Delete(id int) error {
+	if !s.repo.Delete(id) {
+		return ErrNotFound
+	}
+	return nil
+}

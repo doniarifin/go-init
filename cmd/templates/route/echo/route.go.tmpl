@@ -1,0 +1,20 @@
+package route
+
+import (
+	"github.com/labstack/echo/v4"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
+)
+
+func SetupRoutes(e *echo.Echo) {
+	api := e.Group("/api/v1")
+
+{{if .UseAuth}}	auth := api.Group("/auth")
+	auth.POST("/register", handler.Register)
+	auth.POST("/login", handler.Login)
+{{end}}{{range .Entities}}
+	api.GET("/{{.Plural}}", handler.List{{.Title}}s)
+	api.POST("/{{.Plural}}", handler.Create{{.Title}})
+	api.GET("/{{.Plural}}/:id", handler.Get{{.Title}}ByID)
+	api.PUT("/{{.Plural}}/:id", handler.Update{{.Title}})
+	api.DELETE("/{{.Plural}}/:id", handler.Delete{{.Title}})
+{{end}}}

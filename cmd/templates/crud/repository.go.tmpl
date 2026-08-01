@@ -1,0 +1,78 @@
+package repository
+
+import (
+	"sync"
+	"time"
+
+	"{{.ProjectName}}/{{.Pkg.Model}}"
+)
+
+type {{.Entity.Title}}Repository struct {
+	mu    sync.Mutex
+	items map[int]model.{{.Entity.Title}}
+	next  int
+}
+
+func New{{.Entity.Title}}Repository() *{{.Entity.Title}}Repository {
+	return &{{.Entity.Title}}Repository{
+		items: make(map[int]model.{{.Entity.Title}}),
+		next:  1,
+	}
+}
+
+func (r *{{.Entity.Title}}Repository) GetAll() []model.{{.Entity.Title}} {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	items := make([]model.{{.Entity.Title}}, 0, len(r.items))
+	for _, item := range r.items {
+		items = append(items, item)
+	}
+	return items
+}
+
+func (r *{{.Entity.Title}}Repository) GetByID(id int) (model.{{.Entity.Title}}, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	item, ok := r.items[id]
+	return item, ok
+}
+
+func (r *{{.Entity.Title}}Repository) Create(item model.{{.Entity.Title}}) model.{{.Entity.Title}} {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	item.ID = r.next
+	item.CreatedAt = time.Now()
+	r.items[item.ID] = item
+	r.next++
+	return item
+}
+
+func (r *{{.Entity.Title}}Repository) Update(id int, item model.{{.Entity.Title}}) (model.{{.Entity.Title}}, bool) {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	existing, ok := r.items[id]
+	if !ok {
+		return existing, false
+	}
+
+	item.ID = id
+	item.CreatedAt = existing.CreatedAt
+	r.items[id] = item
+	return item, true
+}
+
+func (r *{{.Entity.Title}}Repository) Delete(id int) bool {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+
+	if _, ok := r.items[id]; !ok {
+		return false
+	}
+
+	delete(r.items, id)
+	return true
+}

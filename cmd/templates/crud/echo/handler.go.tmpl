@@ -1,0 +1,71 @@
+package handler
+
+import (
+	"net/http"
+	"strconv"
+
+	"github.com/labstack/echo/v4"
+	"{{.ProjectName}}/{{.Pkg.Model}}"
+	"{{.ProjectName}}/{{.Pkg.Service}}"
+)
+
+var {{.Entity.Lower}}Service = service.New{{.Entity.Title}}Service()
+
+func List{{.Entity.Title}}s(c echo.Context) error {
+	return c.JSON(http.StatusOK, {{.Entity.Lower}}Service.GetAll())
+}
+
+func Create{{.Entity.Title}}(c echo.Context) error {
+	var item model.{{.Entity.Title}}
+	if err := c.Bind(&item); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
+	}
+
+	return c.JSON(http.StatusCreated, {{.Entity.Lower}}Service.Create(item))
+}
+
+func Get{{.Entity.Title}}ByID(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
+	}
+
+	item, err := {{.Entity.Lower}}Service.GetByID(id)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "not found"})
+	}
+
+	return c.JSON(http.StatusOK, item)
+}
+
+func Update{{.Entity.Title}}(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
+	}
+
+	var item model.{{.Entity.Title}}
+	if err := c.Bind(&item); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid input"})
+	}
+
+	updated, err := {{.Entity.Lower}}Service.Update(id, item)
+	if err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "not found"})
+	}
+
+	return c.JSON(http.StatusOK, updated)
+}
+
+func Delete{{.Entity.Title}}(c echo.Context) error {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "invalid id"})
+	}
+
+	if err := {{.Entity.Lower}}Service.Delete(id); err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "not found"})
+	}
+
+	return c.NoContent(http.StatusNoContent)
+}

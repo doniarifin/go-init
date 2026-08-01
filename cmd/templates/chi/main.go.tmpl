@@ -1,13 +1,13 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
 {{if .HasRoutes}}	"{{.ProjectName}}/{{.Pkg.Route}}"
+{{else}}	"github.com/go-chi/chi/v5"
 {{end}})
 
 func main() {
@@ -16,17 +16,18 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello from {{.ProjectName}}")
+{{if .HasRoutes}}	r := route.SetupRouter()
+{{else}}	r := chi.NewRouter()
+{{end}}
+	r.Get("/", func(w http.ResponseWriter, rq *http.Request) {
+		w.Write([]byte("Hello from {{.ProjectName}}"))
 	})
 
-{{if .HasRoutes}}	route.RegisterRoutes()
-{{end}}
 	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "3000"
 	}
 
 	log.Printf("Server running on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }

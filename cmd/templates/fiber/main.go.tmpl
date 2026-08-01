@@ -6,8 +6,8 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/joho/godotenv"
-	"{{.ProjectName}}/internal/handler"
-)
+{{if .HasRoutes}}	"{{.ProjectName}}/{{.Pkg.Route}}"
+{{end}})
 
 func main() {
 	// load env
@@ -22,11 +22,8 @@ func main() {
 		return c.SendString("Hello from {{.ProjectName}}")
 	})
 
-	{{if .UseAuth}}
-	app.Post("/register", handler.Register)
-	app.Post("/login", handler.Login)
-	{{end}}
-
+{{if .HasRoutes}}	route.SetupRoutes(app)
+{{end}}
 	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "3000"

@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 {{if .HasRoutes}}	"{{.ProjectName}}/{{.Pkg.Route}}"
 {{end}})
@@ -16,11 +17,13 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+	r := mux.NewRouter()
+
+	r.HandleFunc("/", func(w http.ResponseWriter, rq *http.Request) {
 		fmt.Fprintln(w, "Hello from {{.ProjectName}}")
 	})
 
-{{if .HasRoutes}}	route.RegisterRoutes()
+{{if .HasRoutes}}	route.SetupRouter(r)
 {{end}}
 	port := os.Getenv("APP_PORT")
 	if port == "" {
@@ -28,5 +31,5 @@ func main() {
 	}
 
 	log.Printf("Server running on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, r))
 }

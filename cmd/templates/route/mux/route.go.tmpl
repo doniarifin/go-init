@@ -1,0 +1,17 @@
+package route
+
+import (
+	"github.com/gorilla/mux"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
+)
+
+func SetupRouter(r *mux.Router) {
+{{if .UseAuth}}	r.HandleFunc("/register", handler.Register).Methods("POST")
+	r.HandleFunc("/login", handler.Login).Methods("POST")
+{{end}}{{range .Entities}}
+	r.HandleFunc("/{{.Plural}}", handler.List{{.Title}}s).Methods("GET")
+	r.HandleFunc("/{{.Plural}}", handler.Create{{.Title}}).Methods("POST")
+	r.HandleFunc("/{{.Plural}}/{id}", handler.Get{{.Title}}ByID).Methods("GET")
+	r.HandleFunc("/{{.Plural}}/{id}", handler.Update{{.Title}}).Methods("PUT")
+	r.HandleFunc("/{{.Plural}}/{id}", handler.Delete{{.Title}}).Methods("DELETE")
+{{end}}}

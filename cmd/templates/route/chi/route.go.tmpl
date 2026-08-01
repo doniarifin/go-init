@@ -1,0 +1,21 @@
+package route
+
+import (
+	"github.com/go-chi/chi/v5"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
+)
+
+func SetupRouter() *chi.Mux {
+	r := chi.NewRouter()
+
+{{if .UseAuth}}	r.Post("/register", handler.Register)
+	r.Post("/login", handler.Login)
+{{end}}{{range .Entities}}
+	r.Get("/{{.Plural}}", handler.List{{.Title}}s)
+	r.Post("/{{.Plural}}", handler.Create{{.Title}})
+	r.Get("/{{.Plural}}/{id}", handler.Get{{.Title}}ByID)
+	r.Put("/{{.Plural}}/{id}", handler.Update{{.Title}})
+	r.Delete("/{{.Plural}}/{id}", handler.Delete{{.Title}})
+{{end}}
+	return r
+}

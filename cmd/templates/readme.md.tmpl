@@ -1,9 +1,43 @@
 # {{.ProjectName}}
 
-Generated with go-init 
+Generated with go-init
 
 ## Run
 
-```
+```bash
 go run main.go
 ```
+{{if .UseAuth}}
+## Auth
+
+- `POST /api/v1/auth/register` - register a new user
+- `POST /api/v1/auth/login` - login and get a JWT token
+{{end}}{{if .Entities}}
+## CRUD Endpoints
+{{range .Entities}}
+- `{{.Title}}` ({{.Plural}}):
+  - `GET /api/v1/{{.Plural}}` - list all
+  - `POST /api/v1/{{.Plural}}` - create
+  - `GET /api/v1/{{.Plural}}/:id` - get by id
+  - `PUT /api/v1/{{.Plural}}/:id` - update
+  - `DELETE /api/v1/{{.Plural}}/:id` - delete
+{{end}}{{end}}{{if ne .DBType "none"}}
+## Database
+
+- Driver: {{.DBType}}
+- Edit `.env` to configure connection settings
+{{end}}{{if .UseDocker}}
+## Docker
+
+```bash
+docker build -t {{.ProjectName}} .
+docker run -p 3000:3000 {{.ProjectName}}
+```
+{{end}}{{if .WithMigrations}}
+## Migrations
+
+- SQL files live in `migrations/`
+{{end}}
+## Structure
+
+- Layout: {{.Structure}}

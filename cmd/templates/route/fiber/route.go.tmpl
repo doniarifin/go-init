@@ -2,13 +2,19 @@ package route
 
 import (
 	"github.com/gofiber/fiber/v2"
-	"{{.ProjectName}}/internal/handler"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
 )
 
 func SetupRoutes(app *fiber.App) {
 	api := app.Group("/api/v1")
 
-	auth := api.Group("/auth")
+{{if .UseAuth}}	auth := api.Group("/auth")
 	auth.Post("/register", handler.Register)
 	auth.Post("/login", handler.Login)
-}
+{{end}}{{range .Entities}}
+	api.Get("/{{.Plural}}", handler.List{{.Title}}s)
+	api.Post("/{{.Plural}}", handler.Create{{.Title}})
+	api.Get("/{{.Plural}}/:id", handler.Get{{.Title}}ByID)
+	api.Put("/{{.Plural}}/:id", handler.Update{{.Title}})
+	api.Delete("/{{.Plural}}/:id", handler.Delete{{.Title}})
+{{end}}}

@@ -1,0 +1,9 @@
+package model
+
+import "time"
+
+type {{.Entity.Title}} struct {
+	ID        int       `json:"id"`
+{{range .Entity.Fields}}	{{.Name}} string    `json:"{{.JSON}}"`
+{{end}}	CreatedAt time.Time `json:"created_at"`
+}

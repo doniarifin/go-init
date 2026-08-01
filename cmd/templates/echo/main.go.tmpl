@@ -1,12 +1,12 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
 
 	"github.com/joho/godotenv"
+	"github.com/labstack/echo/v4"
 {{if .HasRoutes}}	"{{.ProjectName}}/{{.Pkg.Route}}"
 {{end}})
 
@@ -16,17 +16,18 @@ func main() {
 		log.Println("No .env file found")
 	}
 
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintln(w, "Hello from {{.ProjectName}}")
+	e := echo.New()
+
+	e.GET("/", func(c echo.Context) error {
+		return c.String(http.StatusOK, "Hello from {{.ProjectName}}")
 	})
 
-{{if .HasRoutes}}	route.RegisterRoutes()
+{{if .HasRoutes}}	route.SetupRoutes(e)
 {{end}}
 	port := os.Getenv("APP_PORT")
 	if port == "" {
 		port = "3000"
 	}
 
-	log.Printf("Server running on :%s", port)
-	log.Fatal(http.ListenAndServe(":"+port, nil))
+	e.Logger.Fatal(e.Start(":" + port))
 }

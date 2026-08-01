@@ -1,0 +1,27 @@
+package config
+
+import (
+	"database/sql"
+	"log"
+	"os"
+
+	_ "github.com/mattn/go-sqlite3"
+)
+
+func ConnectDB() *sql.DB {
+	path := os.Getenv("DB_NAME")
+	if path == "" {
+		path = "{{.ProjectName}}.db"
+	}
+
+	db, err := sql.Open("sqlite3", path)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	if err := db.Ping(); err != nil {
+		log.Fatal(err)
+	}
+
+	return db
+}

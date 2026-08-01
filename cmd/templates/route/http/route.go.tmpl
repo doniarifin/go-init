@@ -3,10 +3,33 @@ package route
 import (
 	"net/http"
 
-  "{{.ProjectName}}/internal/handler"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
 )
 
 func RegisterRoutes() {
-	http.HandleFunc("/register", handler.Register)
+{{if .UseAuth}}	http.HandleFunc("/register", handler.Register)
 	http.HandleFunc("/login", handler.Login)
-}
+{{end}}{{range .Entities}}
+	http.HandleFunc("/{{.Plural}}", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handler.List{{.Title}}s(w, r)
+		case http.MethodPost:
+			handler.Create{{.Title}}(w, r)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+	http.HandleFunc("/{{.Plural}}/", func(w http.ResponseWriter, r *http.Request) {
+		switch r.Method {
+		case http.MethodGet:
+			handler.Get{{.Title}}ByID(w, r)
+		case http.MethodPut:
+			handler.Update{{.Title}}(w, r)
+		case http.MethodDelete:
+			handler.Delete{{.Title}}(w, r)
+		default:
+			w.WriteHeader(http.StatusMethodNotAllowed)
+		}
+	})
+{{end}}}

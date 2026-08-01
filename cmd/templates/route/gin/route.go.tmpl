@@ -2,7 +2,7 @@ package route
 
 import (
 	"github.com/gin-gonic/gin"
-	"{{.ProjectName}}/internal/handler"
+	"{{.ProjectName}}/{{.Pkg.Handler}}"
 )
 
 func SetupRouter() *gin.Engine {
@@ -11,12 +11,18 @@ func SetupRouter() *gin.Engine {
 	// group API
 	api := r.Group("/api/v1")
 	{
-		auth := api.Group("/auth")
+{{if .UseAuth}}		auth := api.Group("/auth")
 		{
 			auth.POST("/register", handler.Register)
 			auth.POST("/login", handler.Login)
 		}
-	}
+{{end}}{{range .Entities}}
+		api.GET("/{{.Plural}}", handler.List{{.Title}}s)
+		api.POST("/{{.Plural}}", handler.Create{{.Title}})
+		api.GET("/{{.Plural}}/:id", handler.Get{{.Title}}ByID)
+		api.PUT("/{{.Plural}}/:id", handler.Update{{.Title}})
+		api.DELETE("/{{.Plural}}/:id", handler.Delete{{.Title}})
+{{end}}	}
 
 	return r
 }

@@ -1,0 +1,19 @@
+package handler
+
+import (
+	"encoding/json"
+	"net/http"
+	"strconv"
+	"strings"
+)
+
+func writeJSON(w http.ResponseWriter, status int, data interface{}) {
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(status)
+	json.NewEncoder(w).Encode(data)
+}
+
+func idFromPath(r *http.Request, prefix string) (int, error) {
+	raw := strings.TrimPrefix(r.URL.Path, prefix)
+	return strconv.Atoi(raw)
+}

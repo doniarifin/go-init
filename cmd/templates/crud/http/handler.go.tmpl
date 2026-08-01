@@ -1,0 +1,78 @@
+package handler
+
+import (
+	"encoding/json"
+	"net/http"
+
+	"{{.ProjectName}}/{{.Pkg.Model}}"
+	"{{.ProjectName}}/{{.Pkg.Service}}"
+)
+
+var {{.Entity.Lower}}Service = service.New{{.Entity.Title}}Service()
+
+func List{{.Entity.Title}}s(w http.ResponseWriter, r *http.Request) {
+	writeJSON(w, http.StatusOK, {{.Entity.Lower}}Service.GetAll())
+}
+
+func Create{{.Entity.Title}}(w http.ResponseWriter, r *http.Request) {
+	var item model.{{.Entity.Title}}
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid input"})
+		return
+	}
+
+	writeJSON(w, http.StatusCreated, {{.Entity.Lower}}Service.Create(item))
+}
+
+func Get{{.Entity.Title}}ByID(w http.ResponseWriter, r *http.Request) {
+	id, err := idFromPath(r, "/{{.Entity.Plural}}/")
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+		return
+	}
+
+	item, err := {{.Entity.Lower}}Service.GetByID(id)
+	if err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, item)
+}
+
+func Update{{.Entity.Title}}(w http.ResponseWriter, r *http.Request) {
+	id, err := idFromPath(r, "/{{.Entity.Plural}}/")
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+		return
+	}
+
+	var item model.{{.Entity.Title}}
+	if err := json.NewDecoder(r.Body).Decode(&item); err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid input"})
+		return
+	}
+
+	updated, err := {{.Entity.Lower}}Service.Update(id, item)
+	if err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
+		return
+	}
+
+	writeJSON(w, http.StatusOK, updated)
+}
+
+func Delete{{.Entity.Title}}(w http.ResponseWriter, r *http.Request) {
+	id, err := idFromPath(r, "/{{.Entity.Plural}}/")
+	if err != nil {
+		writeJSON(w, http.StatusBadRequest, map[string]string{"error": "invalid id"})
+		return
+	}
+
+	if err := {{.Entity.Lower}}Service.Delete(id); err != nil {
+		writeJSON(w, http.StatusNotFound, map[string]string{"error": "not found"})
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
